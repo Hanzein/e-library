@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }} - E-Library{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            {% if book.cover %}
+            <img src="{{ book.cover.url }}" alt="{{ book.title }}" class="img-fluid rounded shadow">
+            {% else %}
+            <div class="bg-light rounded shadow d-flex align-items-center justify-content-center"
+                style="height: 400px;">
+                <i class="fas fa-book fa-3x text-muted"></i>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-start">
+                <h2>{{ book.title }}</h2>
+                {% csrf_token %}
+                <button type="button" id="favorite-btn-{{ book.pk }}"
+                    class="favorite-btn {% if is_favorite %}favorited{% endif %}"
+                    onclick="toggleFavorite('{{ book.pk }}')">
+                    {% if is_favorite %}
+                    <i class="fas fa-star"></i>
+                    {% else %}
+                    <i class="far fa-star"></i>
+                    {% endif %}
+                </button>
+            </div>
+
+            <div class="mb-3">
+                <p class="mb-1"><strong><i class="fas fa-user"></i> Penulis:</strong> {{ book.author }}</p>
+                <p class="mb-1"><strong><i class="fas fa-tag"></i> Genre:</strong> {{ book.get_genre_display }}</p>
+                <p class="mb-1"><strong><i class="fas fa-calendar"></i> Tahun Terbit:</strong> {{ book.year }}</p>
+                <p class="mb-1"><strong><i class="fas fa-file-pdf"></i> Jumlah Halaman:</strong> {{ book.total_pages }}
+                </p>
+            </div>
+
+            <h5>Deskripsi</h5>
+            <p>{{ book.description|linebreaks }}</p>
+
+            {% if book.keywords %}
+            <h5>Kata-kata Relevan</h5>
+            <p class="text-muted">{{ book.keywords }}</p>
+            {% endif %}
+
+            <div class="mt-4">
+                <a href="{% url 'books:preview' book.pk %}" class="btn btn-primary me-2">
+                    <i class="fas fa-book-open"></i> Baca Buku
+                </a>
+                <a href="{% url 'books:edit' book.pk %}" class="btn btn-warning me-2">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{% url 'books:delete' book.pk %}" class="btn btn-danger me-2"
+                    onclick="return confirmDelete('{{ book.title }}')">
+                    <i class="fas fa-trash"></i> Hapus
+                </a>
+                <a href="{% url 'books:analyze' book.pk %}" class="btn btn-info">
+                    <i class="fas fa-chart-bar"></i> Analisis
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

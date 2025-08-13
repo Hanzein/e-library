@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Analisis {{ book.title }} - E-Library{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-bar"></i> Analisis Buku: {{ book.title }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if book.cover %}
+                        <img src="{{ book.cover.url }}" alt="{{ book.title }}"
+                            style="width: 120px; height: 160px; object-fit: cover;" class="rounded">
+                        {% else %}
+                        <div class="bg-light rounded d-inline-flex align-items-center justify-content-center"
+                            style="width: 120px; height: 160px;">
+                            <i class="fas fa-book fa-2x text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <p><strong>Penulis:</strong> {{ book.author }}</p>
+                        <p><strong>Tahun Terbit:</strong> {{ book.year }}</p>
+                        <p><strong>Genre:</strong> {{ book.get_genre_display }}</p>
+                        <p><strong>Jumlah Halaman:</strong> {{ book.total_pages }}</p>
+                    </div>
+
+                    {% if book.keywords %}
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-tags"></i> Kata-kata Relevan (Hasil Analisis Terakhir)</h5>
+                        <p>{{ book.keywords }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-info-circle"></i> Tentang Analisis</h6>
+                        <p class="mb-0">
+                            Proses analisis akan mengekstrak teks dari file PDF dan menggunakan teknik NLP
+                            untuk menemukan kata-kata kunci yang paling relevan dalam buku ini.
+                            Proses ini mungkin memerlukan waktu beberapa menit tergantung ukuran buku.
+                        </p>
+                    </div>
+
+                    <form method="post" class="d-grid gap-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Mulai Analisis
+                        </button>
+                        <a href="{% url 'books:detail' book.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Kembali
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show loading state when analysis starts
+    document.querySelector('form').addEventListener('submit', function () {
+        const button = document.querySelector('button[type="submit"]');
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menganalisis...';
+        button.disabled = true;
+    });
+</script>
+{% endblock %}

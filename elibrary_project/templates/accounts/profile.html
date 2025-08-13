@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil - E-Library{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-user"></i> Profil Saya</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        {% if profile.photo %}
+                        <img src="{{ profile.photo.url }}" alt="Foto Profil" class="profile-photo">
+                        {% else %}
+                        <i class="fas fa-user-circle" style="font-size: 150px; color: #6c757d;"></i>
+                        {% endif %}
+                    </div>
+
+                    <h4>{{ profile.name|default:user.username }}</h4>
+                    <p class="text-muted">{{ user.email }}</p>
+
+                    <div class="mt-4">
+                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary me-2">
+                            <i class="fas fa-edit"></i> Edit Profil
+                        </a>
+                        <a href="{% url 'accounts:change_password' %}" class="btn btn-secondary">
+                            <i class="fas fa-lock"></i> Ubah Password
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

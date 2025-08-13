@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Hapus {{ book.title }} - E-Library{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3><i class="fas fa-trash"></i> Hapus Buku</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if book.cover %}
+                        <img src="{{ book.cover.url }}" alt="{{ book.title }}"
+                            style="width: 120px; height: 160px; object-fit: cover;" class="rounded">
+                        {% else %}
+                        <div class="bg-light rounded d-inline-flex align-items-center justify-content-center"
+                            style="width: 120px; height: 160px;">
+                            <i class="fas fa-book fa-2x text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <p class="text-center">
+                        Apakah Anda yakin ingin menghapus buku <strong>"{{ book.title }}"</strong>?
+                    </p>
+                    <p class="text-center text-muted">
+                        Tindakan ini tidak dapat dibatalkan. Semua data termasuk file PDF dan gambar halaman akan
+                        dihapus.
+                    </p>
+
+                    <form method="post" class="d-grid gap-2">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-6">
+                                <a href="{% url 'books:detail' book.pk %}" class="btn btn-secondary w-100">
+                                    <i class="fas fa-times"></i> Batal
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }} - Halaman {{ current_page }} - E-Library{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Simple Navigation Bar for Preview -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <a href="{% url 'books:detail' book.pk %}" class="btn btn-outline-light me-3">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+                <span class="navbar-text">
+                    {{ current_page }} / {{ book.total_pages }}
+                </span>
+            </div>
+
+            <div class="d-flex">
+                {% if has_previous %}
+                <a href="{% url 'books:preview_page' book.pk current_page|add:'-1' %}"
+                    class="btn btn-outline-light me-2">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </a>
+                {% else %}
+                <button class="btn btn-outline-secondary me-2" disabled>
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                {% endif %}
+
+                {% if has_next %}
+                <a href="{% url 'books:preview_page' book.pk current_page|add:'1' %}" class="btn btn-outline-light">
+                    <i class="fas fa-chevron-right"></i> Next
+                </a>
+                {% else %}
+                <button class="btn btn-outline-secondary" disabled>
+                    <i class="fas fa-chevron-right"></i> Next
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Book Page Preview -->
+    <div class="preview-container bg-light">
+        {% if page.image %}
+        <img src="{{ page.image.url }}" alt="Page {{ current_page }}" class="preview-image">
+        {% else %}
+        <div class="d-flex align-items-center justify-content-center" style="height: 80vh;">
+            <div class="text-center">
+                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Halaman tidak dapat ditampilkan</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Fixed Page Controls -->
+    <div class="page-controls">
+        {% if has_previous %}
+        <a href="{% url 'books:preview_page' book.pk current_page|add:'-1' %}" class="btn btn-light btn-sm">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% else %}
+        <button class="btn btn-secondary btn-sm" disabled>
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        {% endif %}
+
+        <span class="text-white mx-3">{{ current_page }} / {{ book.total_pages }}</span>
+
+        {% if has_next %}
+        <a href="{% url 'books:preview_page' book.pk current_page|add:'1' %}" class="btn btn-light btn-sm">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        {% else %}
+        <button class="btn btn-secondary btn-sm" disabled>
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

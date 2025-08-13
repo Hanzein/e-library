@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Katalog - E-Library{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Filter Favorit</label>
+                            <select name="favorites" class="form-select">
+                            <option value="0" {% if request.GET.favorites|default:"0" == "0" %}selected{% endif %}>Semua Buku</option>
+                            <option value="1" {% if request.GET.favorites|default:"0" == "1" %}selected{% endif %}>Favorit Saja</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Genre</label>
+                            <select name="genre" class="form-select">
+                                <option value="">Semua Genre</option>
+                                {% for value, label in genres %}
+                        <option value="{{ value }}" {% if selected_genre|default:'' == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Pencarian</label>
+                            {{ search_form.query }}
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary d-block">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Books List -->
+    <div class="row">
+        <div class="col-md-12">
+            {% if page_obj.object_list %}
+            {% for book in page_obj %}
+            <div class="book-card row">
+                {% csrf_token %}
+                <div class="col-md-2">
+                    {% if book.cover %}
+                    <img src="{{ book.cover.url }}" alt="{{ book.title }}" class="book-cover">
+                    {% else %}
+                    <div class="book-cover d-flex align-items-center justify-content-center bg-light">
+                        <i class="fas fa-book text-muted"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <h5>
+                        <a href="{% url 'books:detail' book.pk %}" class="text-decoration-none">
+                            {{ book.title }}
+                        </a>
+                    </h5>
+                    <p class="text-muted mb-1">
+                        <i class="fas fa-user"></i> {{ book.author }} •
+                        <i class="fas fa-calendar"></i> {{ book.year }} •
+                        <i class="fas fa-tag"></i> {{ book.get_genre_display }}
+                    </p>
+                    <p class="text-truncate">{{ book.description|truncatewords:20 }}</p>
+                </div>
+                <div class="col-md-2 text-end">
+                    <button type="button" id="favorite-btn-{{ book.pk }}"
+                        class="favorite-btn {% if book.pk in user_favorites %}favorited{% endif %}"
+                        onclick="toggleFavorite('{{ book.pk }}')">
+                        {% if book.pk in user_favorites %}
+                        <i class="fas fa-star"></i>
+                        {% else %}
+                        <i class="far fa-star"></i>
+                        {% endif %}
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Prev</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Last</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="text-center">
+                <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                <h4>Tidak ada buku yang ditemukan</h4>
+                <p class="text-muted">Coba ubah filter atau kata kunci pencarian Anda.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
